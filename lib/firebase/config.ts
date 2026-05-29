@@ -1,0 +1,27 @@
+import { initializeApp, getApps, getApp, FirebaseApp } from 'firebase/app'
+import { getAuth, Auth } from 'firebase/auth'
+import { getFirestore, Firestore } from 'firebase/firestore'
+
+const firebaseConfig = {
+  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY || 'MOCK_API_KEY',
+  authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN || 'mock.firebaseapp.com',
+  projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || 'cinemate-mock',
+  storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET || 'cinemate-mock.appspot.com',
+  messagingSenderId: process.env.NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID || '000000000000',
+  appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID || '1:000000000000:web:0000000000000000',
+}
+
+// Initialize Firebase only if credentials are real
+const isMock = !process.env.NEXT_PUBLIC_FIREBASE_API_KEY
+
+let app: FirebaseApp | null = null
+let auth: Auth | null = null
+let db: Firestore | null = null
+
+if (!isMock) {
+  app = getApps().length > 0 ? getApp() : initializeApp(firebaseConfig)
+  auth = getAuth(app)
+  db = getFirestore(app)
+}
+
+export { app, auth, db, isMock, firebaseConfig }
