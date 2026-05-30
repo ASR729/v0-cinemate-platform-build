@@ -146,6 +146,8 @@ export function Step4Series({ data, onUpdate, onNext, onBack }: Step4Props) {
                 posterPath={series.poster_path}
                 year={series.first_air_date?.slice(0, 4)}
                 rating={series.vote_average}
+                genreIds={series.genre_ids}
+                mediaType="tv"
                 selected={data.favoriteSeriesIds.includes(series.id)}
                 onSelect={() => toggleSeries(series)}
               />

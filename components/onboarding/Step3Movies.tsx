@@ -146,6 +146,8 @@ export function Step3Movies({ data, onUpdate, onNext, onBack }: Step3Props) {
                 posterPath={movie.poster_path}
                 year={movie.release_date?.slice(0, 4)}
                 rating={movie.vote_average}
+                genreIds={movie.genre_ids}
+                mediaType="movie"
                 selected={data.favoriteMovieIds.includes(movie.id)}
                 onSelect={() => toggleMovie(movie)}
               />
