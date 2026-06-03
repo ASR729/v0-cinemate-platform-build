@@ -51,6 +51,7 @@ export function Step4Series({ data, onUpdate, onNext, onBack }: Step4Props) {
         favoriesSeriesTitles: { ...data.favoriesSeriesTitles, [series.id]: series.name },
         favoriteSeriesPosters: { ...data.favoriteSeriesPosters, [series.id]: series.poster_path },
         favoriteSeriesYears: { ...data.favoriteSeriesYears, [series.id]: series.first_air_date?.slice(0, 4) || '' },
+        favoriteSeriesRatings: { ...data.favoriteSeriesRatings, [series.id]: series.vote_average ?? 0 },
       })
     }
   }

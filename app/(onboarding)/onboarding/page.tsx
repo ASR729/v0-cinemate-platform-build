@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { AnimatePresence } from 'framer-motion'
 import { OnboardingProgress } from '@/components/cinemate/OnboardingProgress'
 import { Step1Profile } from '@/components/onboarding/Step1Profile'
@@ -17,8 +18,11 @@ import {
   STEP_LABELS,
 } from '@/lib/onboarding/store'
 import { updateUserProfile } from '@/lib/firebase/firestore'
+import { useAuth } from '@/contexts/AuthContext'
 
 export default function OnboardingPage() {
+  const router = useRouter()
+  const { user, refreshProfile } = useAuth()
   const [step, setStep] = useState(1)
   const [data, setData] = useState<OnboardingData>(INITIAL_ONBOARDING_DATA)
   const [completed, setCompleted] = useState(false)
@@ -32,33 +36,38 @@ export default function OnboardingPage() {
   const back = () => setStep(s => Math.max(s - 1, 1))
 
   const handleFinish = async () => {
+    // Guard: must be authenticated to save onboarding data
+    if (!user) {
+      router.replace('/login')
+      return
+    }
+
     setSubmitting(true)
     try {
-      // Persist to Firestore (or mock store)
-      // In production, get the real uid from the auth context
-      const mockUid = `user_${Date.now()}`
-      await updateUserProfile(mockUid, {
+      await updateUserProfile(user.uid, {
         displayName: data.displayName,
         username: data.username,
         genres: data.genres,
         favoriteMovies: data.favoriteMovieIds.map(id => ({
           id,
           title: data.favoriteMovieTitles[id] || '',
-          posterPath: data.favoriteMoviePosters[id] || null,
+          posterPath: data.favoriteMoviePosters[id] ?? null,
           releaseYear: data.favoriteMovieYears[id] || '',
-          rating: 0,
+          rating: data.favoriteMovieRatings[id] ?? 0,
         })),
         favoriteSeries: data.favoriteSeriesIds.map(id => ({
           id,
           title: data.favoriesSeriesTitles[id] || '',
-          posterPath: data.favoriteSeriesPosters[id] || null,
+          posterPath: data.favoriteSeriesPosters[id] ?? null,
           releaseYear: data.favoriteSeriesYears[id] || '',
-          rating: 0,
+          rating: data.favoriteSeriesRatings[id] ?? 0,
         })),
         storytellingInterests: data.storytellingInterests,
         emotionalPreferences: data.emotionalPreferences,
         onboardingCompleted: true,
       })
+      // Refresh the auth context so dashboard immediately sees the completed profile
+      await refreshProfile()
     } catch (e) {
       console.error('[v0] Onboarding save error:', e)
     } finally {

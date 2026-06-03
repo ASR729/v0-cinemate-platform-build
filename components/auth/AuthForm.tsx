@@ -4,10 +4,8 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { Eye, EyeOff, Mail, Lock, User, AlertCircle, Chrome } from 'lucide-react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
 import { Logo } from '@/components/cinemate/Logo'
 import { signInWithEmail, signUpWithEmail, signInWithGoogle } from '@/lib/firebase/auth'
-import { createUserProfile } from '@/lib/firebase/firestore'
 import { cn } from '@/lib/utils'
 
 interface AuthFormProps {
@@ -15,7 +13,6 @@ interface AuthFormProps {
 }
 
 export function AuthForm({ mode }: AuthFormProps) {
-  const router = useRouter()
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)

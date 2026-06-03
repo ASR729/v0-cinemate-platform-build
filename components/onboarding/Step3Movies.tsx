@@ -51,6 +51,7 @@ export function Step3Movies({ data, onUpdate, onNext, onBack }: Step3Props) {
         favoriteMovieTitles: { ...data.favoriteMovieTitles, [movie.id]: movie.title },
         favoriteMoviePosters: { ...data.favoriteMoviePosters, [movie.id]: movie.poster_path },
         favoriteMovieYears: { ...data.favoriteMovieYears, [movie.id]: movie.release_date?.slice(0, 4) || '' },
+        favoriteMovieRatings: { ...data.favoriteMovieRatings, [movie.id]: movie.vote_average ?? 0 },
       })
     }
   }

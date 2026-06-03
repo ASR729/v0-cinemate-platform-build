@@ -1,7 +1,7 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { MockUser, onAuthChange } from '@/lib/firebase/auth'
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react'
+import { MockUser, onAuthChange, signOutUser } from '@/lib/firebase/auth'
 import { getUserProfile, UserProfile } from '@/lib/firebase/firestore'
 
 interface AuthContextType {
@@ -9,6 +9,7 @@ interface AuthContextType {
   profile: UserProfile | null
   loading: boolean
   refreshProfile: () => Promise<void>
+  signOut: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType>({
@@ -16,6 +17,7 @@ const AuthContext = createContext<AuthContextType>({
   profile: null,
   loading: true,
   refreshProfile: async () => {},
+  signOut: async () => {},
 })
 
 export function AuthProvider({ children }: { children: ReactNode }) {
@@ -23,12 +25,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     if (user) {
       const p = await getUserProfile(user.uid)
       setProfile(p)
     }
-  }
+  }, [user])
+
+  const signOut = useCallback(async () => {
+    // signOutUser calls notifyMockSubscribers(null) which fires onAuthChange,
+    // so user/profile state is cleaned up automatically via the subscriber below.
+    await signOutUser()
+  }, [])
 
   useEffect(() => {
     const unsubscribe = onAuthChange(async (authUser) => {
@@ -45,7 +53,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   return (
-    <AuthContext.Provider value={{ user, profile, loading, refreshProfile }}>
+    <AuthContext.Provider value={{ user, profile, loading, refreshProfile, signOut }}>
       {children}
     </AuthContext.Provider>
   )
