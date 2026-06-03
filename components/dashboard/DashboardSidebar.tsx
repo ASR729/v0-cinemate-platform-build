@@ -20,9 +20,9 @@ import { Logo } from '@/components/cinemate/Logo'
 import { cn } from '@/lib/utils'
 
 const NAV_ITEMS = [
-  { label: 'Discover', icon: Compass, href: '/dashboard', badge: null },
-  { label: 'Matches', icon: Sparkles, href: '/dashboard/matches', badge: 'Soon' },
-  { label: 'Communities', icon: Users, href: '/dashboard/communities', badge: 'Soon' },
+  { label: 'Discover', icon: Compass, href: '/dashboard/discover', badge: null },
+  { label: 'Matches', icon: Sparkles, href: '/dashboard/matches', badge: null },
+  { label: 'Connections', icon: Users, href: '/dashboard/connections', badge: null },
   { label: 'Messages', icon: MessageSquare, href: '/dashboard/messages', badge: 'Soon' },
   { label: 'Watchlists', icon: BookMarked, href: '/dashboard/watchlists', badge: 'Soon' },
   { label: 'Profile', icon: User, href: '/dashboard/profile', badge: null },
