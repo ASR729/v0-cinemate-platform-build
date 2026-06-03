@@ -19,7 +19,7 @@ export default function OtherUserProfilePage() {
   const { userId } = useParams() as { userId: string }
   const { profile: currentUserProfile } = useAuth()
   const [otherProfile, setOtherProfile] = useState<UserProfile | null>(null)
-  const [otherDNA, setOtherDNA] = useState<EntertainmentDNA | null>(null)
+  const [otherDNA, setOtherDNA] = useState<EntertainmentDNA | undefined>(undefined)
   const [compatibility, setCompatibility] = useState<CompatibilityScore | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)

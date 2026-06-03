@@ -13,7 +13,7 @@ import { Loader } from 'lucide-react'
 
 export default function OwnProfilePage() {
   const { user, profile, loading } = useAuth()
-  const [dna, setDna] = useState<EntertainmentDNA | null>(null)
+  const [dna, setDna] = useState<EntertainmentDNA | undefined>(undefined)
   const [isCalculating, setIsCalculating] = useState(false)
 
   useEffect(() => {
