@@ -56,18 +56,10 @@ export function AuthForm({ mode }: AuthFormProps) {
         const result = await signInWithEmail(formData.email, formData.password)
         if (result.error) { setError(result.error); return }
         setSuccess(true)
-        setTimeout(() => router.push('/onboarding'), 600)
       } else {
         const result = await signUpWithEmail(formData.email, formData.password, formData.displayName.trim())
         if (result.error) { setError(result.error); return }
-        if (result.user) {
-          await createUserProfile(result.user.uid, {
-            email: formData.email,
-            displayName: formData.displayName.trim(),
-          })
-        }
         setSuccess(true)
-        setTimeout(() => router.push('/onboarding'), 600)
       }
     } finally {
       setLoading(false)
@@ -80,14 +72,7 @@ export function AuthForm({ mode }: AuthFormProps) {
     try {
       const result = await signInWithGoogle()
       if (result.error) { setError(result.error); return }
-      if (result.user) {
-        await createUserProfile(result.user.uid, {
-          email: result.user.email || '',
-          displayName: result.user.displayName || 'CineMate User',
-        })
-      }
       setSuccess(true)
-      setTimeout(() => router.push('/onboarding'), 600)
     } finally {
       setGoogleLoading(false)
     }

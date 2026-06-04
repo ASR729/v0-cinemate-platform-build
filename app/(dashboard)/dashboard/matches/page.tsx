@@ -57,20 +57,10 @@ export default function MatchesPage() {
     }
   }
 
-  if (authLoading) {
+  if (authLoading || loading) {
     return (
       <div className="w-full h-96 flex items-center justify-center">
         <Loader className="w-8 h-8 text-accent animate-spin" />
-      </div>
-    )
-  }
-
-  if (!user || !profile?.onboardingCompleted) {
-    return (
-      <div className="w-full h-96 flex items-center justify-center">
-        <p className="text-foreground-muted">
-          Please complete onboarding to view matches
-        </p>
       </div>
     )
   }

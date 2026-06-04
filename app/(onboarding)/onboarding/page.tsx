@@ -21,8 +21,8 @@ import { updateUserProfile } from '@/lib/firebase/firestore'
 import { useAuth } from '@/contexts/AuthContext'
 
 export default function OnboardingPage() {
-  const router = useRouter()
   const { user, refreshProfile } = useAuth()
+  const router = useRouter()
   const [step, setStep] = useState(1)
   const [data, setData] = useState<OnboardingData>(INITIAL_ONBOARDING_DATA)
   const [completed, setCompleted] = useState(false)
@@ -36,12 +36,7 @@ export default function OnboardingPage() {
   const back = () => setStep(s => Math.max(s - 1, 1))
 
   const handleFinish = async () => {
-    // Guard: must be authenticated to save onboarding data
-    if (!user) {
-      router.replace('/login')
-      return
-    }
-
+    if (!user) return
     setSubmitting(true)
     try {
       await updateUserProfile(user.uid, {
@@ -51,22 +46,22 @@ export default function OnboardingPage() {
         favoriteMovies: data.favoriteMovieIds.map(id => ({
           id,
           title: data.favoriteMovieTitles[id] || '',
-          posterPath: data.favoriteMoviePosters[id] ?? null,
+          posterPath: data.favoriteMoviePosters[id] || null,
           releaseYear: data.favoriteMovieYears[id] || '',
-          rating: data.favoriteMovieRatings[id] ?? 0,
+          rating: (data as OnboardingData & { favoriteMovieRatings?: Record<number, number> }).favoriteMovieRatings?.[id] ?? 0,
         })),
         favoriteSeries: data.favoriteSeriesIds.map(id => ({
           id,
           title: data.favoriesSeriesTitles[id] || '',
-          posterPath: data.favoriteSeriesPosters[id] ?? null,
+          posterPath: data.favoriteSeriesPosters[id] || null,
           releaseYear: data.favoriteSeriesYears[id] || '',
-          rating: data.favoriteSeriesRatings[id] ?? 0,
+          rating: (data as OnboardingData & { favoriteSeriesRatings?: Record<number, number> }).favoriteSeriesRatings?.[id] ?? 0,
         })),
         storytellingInterests: data.storytellingInterests,
         emotionalPreferences: data.emotionalPreferences,
         onboardingCompleted: true,
       })
-      // Refresh the auth context so dashboard immediately sees the completed profile
+      // Refresh profile in AuthContext so route guards see onboardingCompleted: true
       await refreshProfile()
     } catch (e) {
       console.error('[v0] Onboarding save error:', e)
@@ -77,7 +72,7 @@ export default function OnboardingPage() {
   }
 
   if (completed) {
-    return <CompletionScreen displayName={data.displayName} />
+    return <CompletionScreen displayName={data.displayName} onContinue={() => router.replace('/dashboard')} />
   }
 
   return (

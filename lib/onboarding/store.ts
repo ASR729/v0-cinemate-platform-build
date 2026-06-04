@@ -6,12 +6,10 @@ export interface OnboardingData {
   favoriteMovieTitles: Record<number, string>
   favoriteMoviePosters: Record<number, string | null>
   favoriteMovieYears: Record<number, string>
-  favoriteMovieRatings: Record<number, number>
   favoriteSeriesIds: number[]
   favoriesSeriesTitles: Record<number, string>
   favoriteSeriesPosters: Record<number, string | null>
   favoriteSeriesYears: Record<number, string>
-  favoriteSeriesRatings: Record<number, number>
   storytellingInterests: string[]
   emotionalPreferences: string[]
 }
@@ -24,12 +22,10 @@ export const INITIAL_ONBOARDING_DATA: OnboardingData = {
   favoriteMovieTitles: {},
   favoriteMoviePosters: {},
   favoriteMovieYears: {},
-  favoriteMovieRatings: {},
   favoriteSeriesIds: [],
   favoriesSeriesTitles: {},
   favoriteSeriesPosters: {},
   favoriteSeriesYears: {},
-  favoriteSeriesRatings: {},
   storytellingInterests: [],
   emotionalPreferences: [],
 }

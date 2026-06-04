@@ -1,6 +1,6 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { MockUser, onAuthChange, signOutUser } from '@/lib/firebase/auth'
 import { getUserProfile, UserProfile } from '@/lib/firebase/firestore'
 
@@ -25,18 +25,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [profile, setProfile] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
 
-  const refreshProfile = useCallback(async () => {
+  const refreshProfile = async () => {
     if (user) {
       const p = await getUserProfile(user.uid)
       setProfile(p)
     }
-  }, [user])
+  }
 
-  const signOut = useCallback(async () => {
-    // signOutUser calls notifyMockSubscribers(null) which fires onAuthChange,
-    // so user/profile state is cleaned up automatically via the subscriber below.
+  const signOut = async () => {
     await signOutUser()
-  }, [])
+    // signOutUser notifies subscribers which will call this callback with null,
+    // but we also clear locally to be safe
+    setUser(null)
+    setProfile(null)
+  }
 
   useEffect(() => {
     const unsubscribe = onAuthChange(async (authUser) => {

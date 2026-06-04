@@ -3,6 +3,7 @@ import {
   setDoc,
   getDoc,
   updateDoc,
+  deleteDoc,
   serverTimestamp,
   collection,
   query,
@@ -366,10 +367,71 @@ export const removeFriendship = async (friendshipId: string): Promise<void> => {
   if (!db) return
 
   try {
-    // In Firestore, we would typically delete or archive the friendship
-    // For now, we'll just remove from mock
-    delete mockFriendships[friendshipId]
+    await deleteDoc(doc(db, 'friendships', friendshipId))
   } catch (error) {
     console.error('[v0] Remove friendship error:', error)
+  }
+}
+
+export const getSentFriendRequests = async (fromUid: string): Promise<FriendRequest[]> => {
+  if (isMock) {
+    return Object.values(mockFriendRequests).filter(
+      (r) => r.from === fromUid && r.status === 'pending'
+    )
+  }
+
+  if (!db) return []
+
+  try {
+    const q = query(
+      collection(db, 'friendRequests'),
+      where('from', '==', fromUid),
+      where('status', '==', 'pending')
+    )
+    const snap = await getDocs(q)
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() } as FriendRequest))
+  } catch (error) {
+    console.error('[v0] Get sent requests error:', error)
+    return []
+  }
+}
+
+export const cancelFriendRequest = async (requestId: string): Promise<void> => {
+  if (isMock) {
+    delete mockFriendRequests[requestId]
+    return
+  }
+
+  if (!db) return
+
+  try {
+    await deleteDoc(doc(db, 'friendRequests', requestId))
+  } catch (error) {
+    console.error('[v0] Cancel friend request error:', error)
+  }
+}
+
+export const hasPendingRequest = async (fromUid: string, toUid: string): Promise<string | null> => {
+  if (isMock) {
+    const req = Object.values(mockFriendRequests).find(
+      (r) => r.from === fromUid && r.to === toUid && r.status === 'pending'
+    )
+    return req ? req.id : null
+  }
+
+  if (!db) return null
+
+  try {
+    const q = query(
+      collection(db, 'friendRequests'),
+      where('from', '==', fromUid),
+      where('to', '==', toUid),
+      where('status', '==', 'pending')
+    )
+    const snap = await getDocs(q)
+    return snap.empty ? null : snap.docs[0].id
+  } catch (error) {
+    console.error('[v0] Check pending request error:', error)
+    return null
   }
 }

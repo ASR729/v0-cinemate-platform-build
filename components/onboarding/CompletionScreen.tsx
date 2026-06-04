@@ -1,17 +1,15 @@
 'use client'
 
-import { useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { useRouter } from 'next/navigation'
 import { Logo } from '@/components/cinemate/Logo'
 import { Sparkles, ArrowRight } from 'lucide-react'
 
 interface CompletionScreenProps {
   displayName: string
+  onContinue: () => void
 }
 
-export function CompletionScreen({ displayName }: CompletionScreenProps) {
-  const router = useRouter()
+export function CompletionScreen({ displayName, onContinue }: CompletionScreenProps) {
 
   return (
     <div className="min-h-screen bg-black flex flex-col items-center justify-center px-4 relative overflow-hidden">
@@ -80,7 +78,7 @@ export function CompletionScreen({ displayName }: CompletionScreenProps) {
           transition={{ delay: 0.8, duration: 0.5 }}
           whileHover={{ scale: 1.02 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => router.push('/dashboard')}
+          onClick={onContinue}
           className="inline-flex items-center gap-3 bg-[#E50914] hover:bg-[#f40612] text-white font-semibold text-base px-10 py-4 rounded-xl transition-all duration-200 hover:shadow-2xl hover:shadow-[#E50914]/30 group"
         >
           Enter CineMate

@@ -100,20 +100,10 @@ export default function DiscoverPage() {
   )
   const totalPages = Math.ceil(filteredUsers.length / USERS_PER_PAGE)
 
-  if (authLoading) {
+  if (authLoading || loading) {
     return (
       <div className="w-full h-96 flex items-center justify-center">
         <Loader className="w-8 h-8 text-accent animate-spin" />
-      </div>
-    )
-  }
-
-  if (!user || !profile?.onboardingCompleted) {
-    return (
-      <div className="w-full h-96 flex items-center justify-center">
-        <p className="text-foreground-muted">
-          Please complete onboarding to discover users
-        </p>
       </div>
     )
   }

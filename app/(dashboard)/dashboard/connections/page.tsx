@@ -7,8 +7,10 @@ import {
   getUserProfile,
   getConnections,
   getPendingFriendRequests,
+  getSentFriendRequests,
   acceptFriendRequest,
   rejectFriendRequest,
+  cancelFriendRequest,
   removeFriendship,
   FriendRequest,
   Friendship,
@@ -62,9 +64,14 @@ export default function ConnectionsPage() {
         setReceivedRequests(receivedWithUsers)
 
         // Load sent requests
-        // Note: In a real app, you'd query for requests where from === user.uid
-        // For now, we'll just set empty
-        setSentRequests([])
+        const sentReqs = await getSentFriendRequests(user.uid)
+        const sentWithUsers = await Promise.all(
+          sentReqs.map(async (req) => {
+            const profile = await getUserProfile(req.to)
+            return { user: profile!, request: req }
+          })
+        )
+        setSentRequests(sentWithUsers)
       } catch (error) {
         console.error('[v0] Error loading connections:', error)
       } finally {
@@ -113,18 +120,21 @@ export default function ConnectionsPage() {
     }
   }
 
-  if (authLoading) {
+  const handleCancel = async (requestId: string) => {
+    try {
+      await cancelFriendRequest(requestId)
+      setSentRequests((prev) =>
+        prev.filter((r) => r.request.id !== requestId)
+      )
+    } catch (error) {
+      console.error('[v0] Error cancelling request:', error)
+    }
+  }
+
+  if (authLoading || loading) {
     return (
       <div className="w-full h-96 flex items-center justify-center">
         <Loader className="w-8 h-8 text-accent animate-spin" />
-      </div>
-    )
-  }
-
-  if (!user) {
-    return (
-      <div className="w-full h-96 flex items-center justify-center">
-        <p className="text-foreground-muted">Not authenticated</p>
       </div>
     )
   }
@@ -217,9 +227,21 @@ export default function ConnectionsPage() {
             ))
           )
         ) : (
-          <div className="flex items-center justify-center py-12">
-            <p className="text-foreground-muted">No sent requests</p>
-          </div>
+          sentRequests.length === 0 ? (
+            <div className="flex items-center justify-center py-12">
+              <p className="text-foreground-muted">No sent requests</p>
+            </div>
+          ) : (
+            sentRequests.map((req) => (
+              <RequestCard
+                key={req.request.id}
+                user={req.user}
+                request={req.request}
+                isReceived={false}
+                onCancel={handleCancel}
+              />
+            ))
+          )
         )}
       </motion.div>
     </div>

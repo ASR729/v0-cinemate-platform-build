@@ -30,7 +30,7 @@ export default function OwnProfilePage() {
     }
   }, [profile, dna])
 
-  if (loading) {
+  if (loading || isCalculating) {
     return (
       <div className="w-full h-96 flex items-center justify-center">
         <Loader className="w-8 h-8 text-accent animate-spin" />
@@ -38,21 +38,8 @@ export default function OwnProfilePage() {
     )
   }
 
-  if (!user || !profile) {
-    return (
-      <div className="w-full h-96 flex items-center justify-center">
-        <p className="text-foreground-muted">Not authenticated</p>
-      </div>
-    )
-  }
-
-  if (!profile.onboardingCompleted) {
-    return (
-      <div className="w-full h-96 flex items-center justify-center">
-        <p className="text-foreground-muted">Please complete onboarding first</p>
-      </div>
-    )
-  }
+  // Profile is guaranteed by AuthGuard (onboarding-complete mode)
+  if (!profile) return null
 
   return (
     <div className="w-full">
